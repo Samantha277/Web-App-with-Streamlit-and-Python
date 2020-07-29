@@ -31,10 +31,26 @@ def main():
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)
         return x_train, x_test, y_train, y_test
 
+    #Plot user selected model evaluation matrix to the webapp
+    def plot_metrics(metrics_list):
+        if 'Confusion Matrix' in metrics_list:
+            st.subheader("Confusion Matrix")
+            plot_confusion_matrix(model, x_test, y_test, display_labels=class_names)
+            st.pyplot()
+
+        if 'ROC Curve' in metrics_list:
+            st.subheader("ROC Curve")
+            plot_roc_curve(model, x_test, y_test)
+            st.pyplot()
+        
+        if 'Precision-Recall Curve' in metrics_list:
+            st.subheader('Precision-Recall Curve')
+            plot_precision_recall_curve(model, x_test, y_test)
+            st.pyplot()
 
     df = load_data() #data frame instantiated to load data
     x_train, x_test, y_train, y_test = split(df)
-    
+
     #checkbox - when checked will show raw data on the main page
     if st.sidebar.checkbox("Show raw data", False):
     st.subheader("Mushroom Data Set (Classification)")
