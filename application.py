@@ -49,12 +49,35 @@ def main():
             st.pyplot()
 
     df = load_data() #data frame instantiated to load data
+    class_names = ['edible', 'poisonous']
     x_train, x_test, y_train, y_test = split(df)
+    st.sidebar.subheader("Choose Classifier")
+    classifier = st.sidebar.selectbox("Classifier", ("Support Vector Machine (SVM)", "Logistic Regression", "Random Forest"))
+
+    if classifier == 'Support Vector Machine (SVM)':
+        st.sidebar.subheader("Model Hyperparameters")
+        #choose parameters. Loer C, higher regularization strength
+        C = st.sidebar.number_input("C (Regularization parameter)", 0.01, 10.0, step=0.01, key='C_SVM')
+        kernel = st.sidebar.radio("Kernel", ("rbf", "linear"), key='kernel')
+        gamma = st.sidebar.radio("Gamma (Kernel Coefficient)", ("scale", "auto"), key='gamma')
 
     #checkbox - when checked will show raw data on the main page
-    if st.sidebar.checkbox("Show raw data", False):
-    st.subheader("Mushroom Data Set (Classification)")
-    st.write(df)
+    # if st.sidebar.checkbox("Show raw data", False):
+    # st.subheader("Mushroom Data Set (Classification)")
+    # st.write(df)
+
+         metrics = st.sidebar.multiselect("What metrics to plot?", ('Confusion Matrix', 'ROC Curve', 'Precision-Recall Curve'))
+        
+        if st.sidebar.button("Classify", key='classify'):
+            st.subheader("Support Vector Machine (SVM) Results")
+            model = SVC(C=C, kernel=kernel, gamma=gamma)
+            model.fit(x_train, y_train)
+            accuracy = model.score(x_test, y_test)
+            y_pred = model.predict(x_test)
+            st.write("Accuracy: ", accuracy.round(2))
+            st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
+            st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+            plot_metrics(metrics)
 
 if __name__=='__main__':
     main()
