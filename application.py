@@ -97,5 +97,24 @@ def main():
             st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
             st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
             plot_metrics(metrics)
+
+
+        if classifier == 'Random Forest':
+        st.sidebar.subheader("Model Hyperparameters")
+        n_estimators = st.sidebar.number_input("The number of trees in the forest", 100, 5000, step=10, key='n_estimators')
+        max_depth = st.sidebar.number_input("The maximum depth of the tree", 1, 20, step=1, key='n_estimators')
+        bootstrap = st.sidebar.radio("Bootstrap samples when building trees", ('True', 'False'), key='bootstrap')
+        metrics = st.sidebar.multiselect("What metrics to plot?", ('Confusion Matrix', 'ROC Curve', 'Precision-Recall Curve'))
+
+        if st.sidebar.button("Classify", key='classify'):
+            st.subheader("Random Forest Results")
+            model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, bootstrap=bootstrap, n_jobs=-1)
+            model.fit(x_train, y_train)
+            accuracy = model.score(x_test, y_test)
+            y_pred = model.predict(x_test)
+            st.write("Accuracy: ", accuracy.round(2))
+            st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
+            st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+            plot_metrics(metrics)
 if __name__=='__main__':
     main()
