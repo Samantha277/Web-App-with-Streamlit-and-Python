@@ -23,13 +23,22 @@ def main():
         for col in data.columns:
             data[col] = labelencoder.fit_transform(data[col])
         return data
+    #Split into training and testing datasets
+    @st.cache(persist=True)
+    def split(df):
+        y = df.type
+        x = df.drop(columns=['type'])
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)
+        return x_train, x_test, y_train, y_test
 
-        df = load_data() #data frame instantiated to load data
 
-        #checkbox - when checked will show raw data on the main page
-        if st.sidebar.checkbox("Show raw data", False):
-        st.subheader("Mushroom Data Set (Classification)")
-        st.write(df)
+    df = load_data() #data frame instantiated to load data
+    x_train, x_test, y_train, y_test = split(df)
+    
+    #checkbox - when checked will show raw data on the main page
+    if st.sidebar.checkbox("Show raw data", False):
+    st.subheader("Mushroom Data Set (Classification)")
+    st.write(df)
 
 if __name__=='__main__':
     main()
